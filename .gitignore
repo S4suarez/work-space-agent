@@ -1,0 +1,44 @@
+# Environment and secrets
+.env
+*.env
+.env.*
+credentials.json
+token.json
+*_credentials.json
+*_token.json
+
+# Temporary files
+.tmp/
+*.tmp
+temp/
+tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+nul
+
+# Logs
+*.log
+logs/
+
+# Local data that shouldn't be versioned
+*.sqlite
+*.db
