@@ -8,9 +8,9 @@ This is my first push to GitHub! This repository contains my AI agent framework 
 
 A 3-layer architecture that separates concerns to maximize reliability:
 
-1. **Layer 1: Directives** - SOPs written in Markdown (`directives/`)
+1. **Layer 1: Directives** - SOPs written in Markdown (inside each skill's `skill.md`)
 2. **Layer 2: Orchestration** - AI decision-making and routing
-3. **Layer 3: Execution** - Deterministic Python scripts (`execution/`)
+3. **Layer 3: Execution** - Deterministic Python scripts (inside each skill's `execution/` or `scripts/`)
 
 ## Skills
 
@@ -28,15 +28,25 @@ Custom Claude Code skills for refrigeration industry workflows:
 
 ```
 ├── CLAUDE.md              # Agent instructions
-├── directives/            # SOP markdown files
-├── execution/             # Python scripts
-├── references/            # Reference data files
+├── README.md              # This file
 └── skills/                # Claude Code custom skills
     ├── ak-agent/
+    │   ├── skill.md       # Directives/SOP
+    │   ├── execution/     # Python scripts
+    │   └── references/    # Reference data
     ├── cci-leer-quote-agent/
     ├── dds-agent/
     ├── refrigeration-system-engineer/
     └── turbo-air-refrigeration/
+```
+
+## Local Setup
+
+Skills are backed up here but **must also exist** in `~/.claude/skills/` for Claude Code to use them.
+
+To restore skills to a new machine:
+```bash
+cp -r skills/* ~/.claude/skills/
 ```
 
 ## Author
