@@ -242,17 +242,122 @@ Automatically select and price the refrigeration system for the quoted walk-in b
 4. **Include equipment recommendation** in the final summary output
 
 ### Dimension Extraction Rules
-- Use "Actual Overall Dimension" (external), NOT "Interior Dim" (internal)
+- **Single boxes:** Use "Actual Overall Dimension" (external) directly for BTU lookup
+- **Combo boxes:** Use "Interior Dim" per compartment + wall thickness conversion (see Combo section below)
 - Width and depth are interchangeable for BTU lookup (8x10 = 10x8)
 - Always use the SMALLER number first when formatting for BTU table lookup (e.g., 6x20 not 20x6)
 - Round dimensions to nearest whole foot for BTU table match
 - If exact size not in BTU table, round UP to next larger size
 
-### Combo Box Handling
-If the quote is for a combination cooler/freezer:
-- Extract dimensions for each section separately
-- Invoke RSE for each section independently
-- Present both equipment recommendations
+**AK Wall Thickness Conversion (Interior → External):**
+- Width & Depth: add 8" total (4" per wall panel × 2 walls)
+- Height (floorless): add 4" (ceiling panel only)
+- Height (with floor): add 8" (ceiling + floor panels)
+
+### Combo Box Detection & Handling
+
+**CRITICAL RULE: When "combo" appears in the walk-in description AND "Actual Overall Dimension" is present, the quote contains a combination box with multiple compartments.**
+
+#### How to Read an AK Combo Quote
+
+AK combo quotes always follow this structure:
+
+```
+Two Compartment Walk-in: Indoor combo
+Actual Overall Dimension: W x D x H (Rectangular)
+
+Compartment 1 of N - Indoor [Freezer/Cooler], [with Floor / Floorless]
+Interior Dim: W x D x H
+Temperature: -10°F or 35°F
+Equipment: Refrigeration Supplied By Others
+           Recommended minimum duty XXXXX Btu/hr at 95°F ambient
+
+Compartment 2 of N - Indoor [Freezer/Cooler], [with Floor / Floorless]
+Interior Dim: W x D x H
+Temperature: -10°F or 35°F
+Equipment: Refrigeration Supplied By Others
+           Recommended minimum duty XXXXX Btu/hr at 95°F ambient
+```
+
+**"Actual Overall Dimension"** = the total exterior footprint of the entire combo unit. This is NOT a refrigeration zone.
+
+**"Compartment X of Y"** = individual sections. Each has its own interior dimensions, temperature, and recommended BTU. These ARE the refrigeration zones.
+
+#### Real Example (Quote 26-01360)
+
+```
+Two Compartment Walk-in: Indoor combo
+Actual Overall Dimension: 16'-0" x 32'-0" x 8'-0" (Rectangular)
+
+Compartment 1 of 2 - Indoor Freezer, with Floor
+Interior Dim: 15'-4" x 15'-6" x 7'-4"
+Recommended minimum duty 13570 Btu/hr at 95°F ambient
+
+Compartment 2 of 2 - Indoor Cooler, Floorless
+Interior Dim: 15'-4" x 15'-6" x 7'-8"
+Recommended minimum duty 14157 Btu/hr at 95°F ambient
+```
+
+| Dimension | What It Represents | Use for Refrigeration? |
+|-----------|-------------------|----------------------|
+| 16' x 32' x 8' | Overall combo box footprint | **NO — NEVER** |
+| Compartment 1 (Freezer) | Individual freezer section | **YES — use AK's recommended BTU** |
+| Compartment 2 (Cooler) | Individual cooler section | **YES — use AK's recommended BTU** |
+
+#### AK Provides Recommended BTU (Key Difference from CCI)
+
+AK quotes include **"Recommended minimum duty XXXXX Btu/hr"** per compartment. This is the manufacturer's calculated BTU requirement.
+
+**Use AK's recommended BTU as the required BTU** when invoking the refrigeration-system-engineer skill. This overrides the standard BTU table lookup (treated as USER_PROVIDED BTU in RSE logic). AK has already factored in wall thickness, insulation, and temperature differential.
+
+#### Deriving External Compartment Dimensions
+
+AK provides **"Actual Overall Dimension"** (exterior) for the whole box and **"Interior Dim"** per compartment. To get external dimensions for each compartment, use the wall thickness conversion:
+
+**Wall thickness rule (4" per wall panel):**
+- **Width:** Interior + 8" (4" left wall + 4" right wall)
+- **Length/Depth:** Interior + 8" (4" front wall + 4" back wall)
+- **Height (floorless):** Interior + 4" (ceiling panel only)
+- **Height (with floor):** Interior + 8" (ceiling panel + floor panel)
+
+**Example (Quote 26-01360, Compartment 1 — Freezer with Floor):**
+```
+Interior Dim: 15'-4" x 15'-6" x 7'-4"
+Width:  15'4" + 8" = 16'0"  (16')
+Depth:  15'6" + 8" = 16'2"  (~16')
+Height: 7'4"  + 8" = 8'0"   (8') ← with floor, so +8"
+External: 16' x 16' x 8'
+```
+
+**Example (Quote 26-01360, Compartment 2 — Cooler, Floorless):**
+```
+Interior Dim: 15'-4" x 15'-6" x 7'-8"
+Width:  15'4" + 8" = 16'0"  (16')
+Depth:  15'6" + 8" = 16'2"  (~16')
+Height: 7'8"  + 4" = 8'0"   (8') ← floorless, so +4"
+External: 16' x 16' x 8'
+```
+
+**Use these derived external dimensions** (W x D, drop height) for BTU table lookup when AK does not provide a recommended BTU. When AK does provide recommended BTU, use that value instead (it takes priority).
+
+#### Possible Compartment Combinations
+
+Combos are NOT limited to freezer+cooler. Any mix is possible:
+- Freezer + Cooler (most common)
+- Cooler + Cooler
+- Freezer + Freezer
+- 3+ compartments (e.g., "Three Compartment Walk-in")
+
+#### Refrigeration Sizing Rule
+
+**ALWAYS use the individual compartment BTU recommendations for refrigeration system selection. NEVER size off the overall combo dimension.**
+
+Each compartment gets its own independent refrigeration system:
+1. Read each compartment's type (cooler or freezer) and AK-recommended BTU
+2. Invoke RSE with the AK-recommended BTU as user-provided BTU
+3. Cooler compartments → ADR evaporators (air defrost)
+4. Freezer compartments → LED evaporators (electric defrost)
+5. Present each system separately, then show combined total
 
 ## Workflow Process
 
@@ -375,6 +480,9 @@ Flag for human review when:
 - Unusual box configurations
 
 ## Important Notes
+
+### Combo Box Rule (CRITICAL)
+When "combo" appears in the walk-in description, the "Actual Overall Dimension" is the **overall box footprint** — NOT a refrigeration zone. Only the **individual compartment sections** (listed as "Compartment X of Y") are used for refrigeration sizing. AK provides recommended BTU per compartment — use those values directly. See **Task 5 → Combo Box Detection & Handling** for full details and examples.
 
 ### Dimension Flexibility
 Width and depth are interchangeable because walk-in panels are modular. Only flag if dimensions differ beyond simple swap.

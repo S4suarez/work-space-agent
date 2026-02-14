@@ -30,44 +30,28 @@
 
 | Height | Shelves/Dr | Model | Type | 1200E Price | Notes |
 |--------|-----------|-------|------|-------------|-------|
-| 67" | 5 | 1200E NT | Cooler | $774.88 | Not available in 28" W |
 | 67" | 5 | 1200E HH | Cooler | $917.34 | Not available in 28" W |
 | 67" | 5 | 1200E LT | Freezer | $1,011.45 | Not available in 28" W |
-| 75" | 6 | 1200E NT | Cooler | $1,282.73 | 30x75 |
-| 75" | 6 | 1200E HH | Cooler | $1,245.02 | 30x75 |
-| 75" | 6 | 1200E LT | Freezer | $1,414.14 | 30x75 |
-| 79" | 7 | 1200E NT | Cooler | $1,304.43 | 28x79, 30x79 |
-| 79" | 7 | 1200E HH | Cooler | $1,368.83 | 28x79, 30x79 |
-| 79" | 7 | 1200E LT | Freezer | $1,465.45 | 28x79, 30x79 |
-
-### Model 1200A (Black Finish ONLY)
-
-Available in: 28x79, 30x79, and 30x75 sizes
-
-| Height | Model | Type | 1200A Price | Notes |
-|--------|-------|------|-------------|-------|
-| 75" | 1200A NT | Cooler | $894.31 | 30x75 |
-| 75" | 1200A HH | Cooler | $877.27 | 30x75 |
-| 75" | 1200A LT | Freezer | $1,024.92 | 30x75 |
-| 79" | 1200A NT | Cooler | $916.01 | 28x79, 30x79 |
-| 79" | 1200A HH | Cooler | $1,001.08 | 28x79, 30x79 |
-| 79" | 1200A LT | Freezer | $1,076.23 | 28x79, 30x79 |
+| 75" | 6 | 1200E HH | Cooler | $877.27 | 30x75 |
+| 75" | 6 | 1200E LT | Freezer | $1,024.92 | 30x75 |
+| 79" | 7 | 1200E HH | Cooler | $1,001.08 | 28x79, 30x79 |
+| 79" | 7 | 1200E LT | Freezer | $1,076.23 | 28x79, 30x79 |
 
 ### Quick Height Lookup (HH Cooler Doors)
-| Height | 1200A (Black Only) | 1200E (Galv/Blk/Wht) |
-|--------|-------------------|----------------------|
-| **67"** | N/A | **$917.34** |
-| **75"** | **$877.27** | **$1,245.02** |
-| **79"** | **$1,001.08** | **$1,368.83** |
+| Height | 1200E Price |
+|--------|-------------|
+| **67"** | **$917.34** |
+| **75"** | **$877.27** |
+| **79"** | **$1,001.08** |
 
 ### Quick Height Lookup (LT Freezer Doors)
-| Height | 1200A (Black Only) | 1200E (Galv/Blk/Wht) |
-|--------|-------------------|----------------------|
-| **67"** | N/A | **$1,011.45** |
-| **75"** | **$1,024.92** | **$1,414.14** |
-| **79"** | **$1,076.23** | **$1,465.45** |
+| Height | 1200E Price |
+|--------|-------------|
+| **67"** | **$1,011.45** |
+| **75"** | **$1,024.92** |
+| **79"** | **$1,076.23** |
 
-**Note:** NT (Non-Heated) doors are NOT standard for door installations. Only use NT pricing if specifically requested for windows.
+**Note:** We only sell HH (High Humidity) cooler doors and LT (Low Temp) freezer doors. NT pricing is only applicable for windows (see Window Pricing section).
 
 ## Model 1300E Pass-Thru Doors
 
@@ -75,14 +59,12 @@ Available in: 28x79, 30x79, and 30x75 sizes
 
 | Model | Type | With Lights | No Lights (Default) |
 |-------|------|-------------|---------------------|
-| 1300E NT | Cooler | $1,030.28 | $982.28 |
 | 1300E HH | Cooler | $1,372.74 | **$1,324.74** |
 
 ### Center Pull Doors (30"W x 81"H or 36"W x 81"H)
 
 | Model | Type | Price | Notes |
 |-------|------|-------|-------|
-| 1300CP NT | Cooler | $1,258.65 | No lights included |
 | 1300CP HH | Cooler | $2,872.12 | No lights included |
 
 **Center Pull Features:** No center mullion, L/R only, hydraulic door closer, interior push bars, diamond tread kick plates
@@ -136,8 +118,8 @@ Available in: 28x79, 30x79, and 30x75 sizes
 ### Height-Based Pricing Rule
 **CRITICAL:** Use the door HEIGHT from the CCI or AK quote to select the correct price tier:
 - **67" height:** Use 67" row pricing (e.g., 1200E HH 67" = $917.34)
-- **75" height:** Use 75" row pricing (e.g., 1200A HH 30x75 = $877.27, 1200E HH 30x75 = $1,245.02)
-- **79" height:** Use 79" row pricing (e.g., 1200A HH 28x79/30x79 = $1,001.08, 1200E HH 30x79 = $1,368.83)
+- **75" height:** Use 75" row pricing (e.g., 1200E HH 30x75 = $877.27)
+- **79" height:** Use 79" row pricing (e.g., 1200E HH 30x79 = $1,001.08)
 
 Match by height first, then by width and model. The height determines the pricing tier.
 

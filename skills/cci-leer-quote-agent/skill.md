@@ -64,6 +64,15 @@ Verify CCI/LEER quotes against customer requests.
 
 Calculate customer pricing from CCI/LEER quote prices.
 
+---
+### ⚠️ MANDATORY PRICING RULE ⚠️
+
+**ONLY use SUB TOTAL (WALK-IN + FREIGHT ESTIMATE) as Vendor Cost. NEVER include OPTIONS.**
+
+Options are ALWAYS separate line items and are NEVER included in the base vendor cost or component totals. This rule is absolute and has no exceptions.
+
+---
+
 **CRITICAL PRICING RULES:**
 1. **BASE PRICING = Walk-In + Freight ONLY** - marked up together at 1.25x
 2. **OPTIONS are priced SEPARATELY** - each option gets individual 1.25x markup
@@ -225,11 +234,58 @@ Automatically select and price the refrigeration system for the quoted walk-in b
 - Round dimensions to nearest whole foot for BTU table match
 - If exact size not in BTU table, round UP to next larger size
 
-### Combo Box Handling
-If the quote is for a combination cooler/freezer:
-- Extract dimensions for each section separately
-- Invoke RSE for each section independently
-- Present both equipment recommendations
+### Combo Box Detection & Handling
+
+**CRITICAL RULE: When the word "Combo" appears in the "Dimensions And Basic Description" field, the quote contains a combination box with multiple compartments.**
+
+#### How to Read a Combo Quote
+
+CCI/LEER combo quotes always follow this structure:
+
+```
+[Overall Dimension] [Type1] [Insulation1] [Type2] [Insulation2] Combo [Location]
+[Type1] [Compartment1 Dimension], [Type2] [Compartment2 Dimension]
+```
+
+**Line 1 — Overall box dimension:** The FIRST dimension listed is the total exterior footprint of the entire combo unit. This is NOT a refrigeration zone.
+
+**Line 2 — Individual compartment dimensions:** Each compartment is listed with its type and its own W x D x H. These ARE the refrigeration zones.
+
+#### Real Example (CC359598)
+
+```
+24' x 12' x 8' Freezer (-10°) (5 1/2" WR Polyurethane) Cooler (35°) (4" WR Polyurethane) Combo *INDOOR*
+Freezer (-10°) 12' x 12' x 8', Cooler (35°) 12' x 12' x 8'
+```
+
+| Dimension | What It Represents | Use for Refrigeration? |
+|-----------|-------------------|----------------------|
+| 24' x 12' x 8' | Overall combo box footprint | **NO — NEVER** |
+| 12' x 12' x 8' Freezer | Individual freezer compartment | **YES** |
+| 12' x 12' x 8' Cooler | Individual cooler compartment | **YES** |
+
+#### Possible Compartment Combinations
+
+Combos are NOT limited to freezer+cooler. Any mix is possible:
+- Freezer + Cooler (most common)
+- Cooler + Cooler (e.g., CC359595: 28'x26' cooler + 8'x26' cooler)
+- Freezer + Freezer
+- Freezer + Cooler + Cooler
+- Any other combination of 2+ compartments
+
+#### Refrigeration Sizing Rule
+
+**ALWAYS use the individual compartment dimensions for refrigeration system selection. NEVER use the overall combo dimension.**
+
+Each compartment gets its own independent refrigeration system:
+1. Parse each compartment's type (cooler or freezer) and dimensions (W x D)
+2. Size each system independently using the compartment dimensions
+3. Cooler compartments → ADR evaporators (air defrost)
+4. Freezer compartments → LED evaporators (electric defrost)
+5. Present each system separately, then show combined total
+
+#### Validation Note
+When validating a combo box, the overall dimension should equal the sum of compartment dimensions along the split axis. For example: 24' overall = 12' freezer + 12' cooler along the 24' side.
 
 ## Workflow Process
 
@@ -339,6 +395,9 @@ Flag for human review when:
 - Unusual box configurations
 
 ## Important Notes
+
+### Combo Box Rule (CRITICAL)
+When "Combo" appears in "Dimensions And Basic Description," the first dimension is the **overall box footprint** — NOT a refrigeration zone. Only the **individual compartment dimensions** (listed on the following line) are used for refrigeration sizing. See **Task 5 → Combo Box Detection & Handling** for full details and examples.
 
 ### Dimension Flexibility
 Width and depth are interchangeable because walk-in panels are modular. Only flag if dimensions differ beyond simple swap.

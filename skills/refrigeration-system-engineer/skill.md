@@ -67,6 +67,8 @@ evap_qty_needed = 2 if (width > 30 or depth > 30) else 1
 
 ### Step 4: Select Equipment from Vendors
 
+> **CRITICAL SELECTION RULE:** Always select the **SMALLEST system that meets the BTU requirement**. This means the system with the lowest BTU rating that is still ≥ required BTU. Do NOT skip to larger systems - iterate through options in ascending BTU order and select the FIRST one that qualifies.
+
 **For each available vendor** (currently Turbo Air, future ABCO):
 
 Call the appropriate vendor skill to get equipment data, then filter:
@@ -85,19 +87,20 @@ suitable_systems = systems[systems['btu_rating_448a'] >= required_btu]
 if evap_qty_needed == 2:
     suitable_systems = suitable_systems[suitable_systems['evaporator_qty'] == 2]
 
-# Sort by BTU capacity (smallest that meets requirement)
-suitable_systems = suitable_systems.sort_values('btu_rating_448a')
+# CRITICAL: Sort by BTU capacity ASCENDING to get smallest suitable system
+suitable_systems = suitable_systems.sort_values('btu_rating_448a', ascending=True)
 
-# Get best option
+# Get FIRST option (smallest that meets requirement) - NOT a random or larger one
 recommended = suitable_systems.iloc[0]
 ```
 
-**Equipment selection rules:**
-1. **Never select equipment with BTU < required BTU**
-2. **Prefer smallest system that meets requirements** (most cost-effective)
-3. **Coolers use ADR evaporators** (air defrost)
-4. **Freezers use LED evaporators** (electric defrost with LED lighting)
-5. **Match evaporator quantity to box size** (2 coils if >30ft dimension)
+**Equipment selection rules (in priority order):**
+1. **ALWAYS select the SMALLEST system that meets BTU requirement** - this is the most cost-effective option for the customer
+2. **Never select equipment with BTU < required BTU** - undersizing causes equipment failure
+3. **Never skip to a larger system when a smaller one qualifies** - verify by checking ALL systems between required BTU and selected system
+4. **Coolers use ADR evaporators** (air defrost)
+5. **Freezers use LED evaporators** (electric defrost with LED lighting)
+6. **Match evaporator quantity to box size** (2 coils if >30ft dimension)
 
 ### Step 5: Calculate Customer Pricing
 
@@ -253,6 +256,13 @@ RECOMMENDATION: Turbo Air offers the most cost-effective solution.
 
 ## Critical Rules
 
+### ALWAYS Select Smallest Qualifying System
+- **This is the #1 rule**: Select the system with the LOWEST BTU rating that still meets the requirement
+- Sort all qualifying systems by BTU ascending, then pick the FIRST one
+- NEVER skip to a larger system when a smaller one qualifies
+- Verify selection by confirming no smaller system in the list meets the BTU requirement
+- Example: If required BTU is 14,023, and options are 13,490 / 16,245 / 19,880 / 24,460 → select 16,245 (first one ≥ 14,023)
+
 ### NEVER Undersize
 - System capacity MUST be ≥ required BTU
 - If uncertain, round up to next size
@@ -269,11 +279,19 @@ RECOMMENDATION: Turbo Air offers the most cost-effective solution.
 - Use `>>> Customer Price (1.25x): $X,XXX.00 <<<` format to make it visually distinct
 - Same terminology used across ALL agents (AK, CCI, DDS, TA)
 
-### Combination Boxes
-- Treat cooler and freezer sections as independent systems
-- Calculate BTU separately for each
-- Select different equipment for each (cooler uses ADR, freezer uses LED)
-- Show individual and total pricing
+### Combination (Combo) Boxes
+
+**CRITICAL:** When receiving dimensions from a CCI/LEER combo quote, you will receive **individual compartment dimensions** — NOT the overall box dimension. The calling agent (cci-leer-quote-agent) strips out the overall dimension and passes only the compartment sizes.
+
+**Rules:**
+- Treat each compartment as a fully independent system
+- Calculate BTU separately for each compartment using its own W × D
+- Cooler compartments → ADR evaporators (air defrost)
+- Freezer compartments → LED evaporators (electric defrost)
+- Show individual system pricing AND combined total
+- Combos can be any mix: freezer+cooler, cooler+cooler, freezer+freezer, or 3+ compartments
+
+**Example:** A 24'x12'x8' Freezer/Cooler Combo with Freezer 12'x12'x8' and Cooler 12'x12'x8' → size a 12x12 freezer system AND a 12x12 cooler system separately. Never use 24x12 for either.
 
 ## BTU Table Coverage
 
@@ -360,10 +378,11 @@ Before finalizing recommendation:
 
 1. ✓ BTU requirement looked up from standard table
 2. ✓ System capacity ≥ required BTU (NEVER less)
-3. ✓ Evaporator quantity matches box size (2 if >30ft)
-4. ✓ Evaporator type matches box type (ADR for cooler, LED for freezer)
-5. ✓ Customer price = vendor cost × 1.25, rounded to nearest $50
-6. ✓ All specifications clearly stated
+3. ✓ **Selected system is the SMALLEST that meets BTU requirement** (verify no smaller system qualifies)
+4. ✓ Evaporator quantity matches box size (2 if >30ft)
+5. ✓ Evaporator type matches box type (ADR for cooler, LED for freezer)
+6. ✓ Customer price = vendor cost × 1.25, rounded to nearest $50
+7. ✓ All specifications clearly stated
 
 ## References
 
